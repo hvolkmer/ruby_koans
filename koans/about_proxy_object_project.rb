@@ -15,10 +15,27 @@ require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 class Proxy
   def initialize(target_object)
     @object = target_object
-    # ADD MORE CODE HERE
+    @messages = []
+  end
+  
+  attr_reader :messages
+
+  def called?(message)
+    @messages.include?(message)
+  end
+  
+  def number_of_times_called(message)
+    @messages.find_all {|recorded_message| recorded_message == message }.size
   end
 
-  # WRITE CODE HERE
+  def method_missing(method, *args)
+  	if @object.respond_to?(:method)
+  	  @messages << method
+  	  @object.send(method, *args)
+  	else
+  	  super
+  	end
+  end
 end
 
 # The proxy object should pass the following Koan:

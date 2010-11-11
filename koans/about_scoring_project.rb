@@ -29,8 +29,51 @@ require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 #
 # Your goal is to write the score method.
 
+def score_single_roll(roll)
+  if roll == 5
+    50
+  elsif roll == 1
+    100
+  else
+    0
+  end
+end
+
+def score_multi_roll(one_back, two_back, current)
+  sum = 0
+  if two_back == 1
+    sum += 1000	- 200
+  else
+   sum += two_back*100
+   if two_back == 5
+     sum -= 100
+   elsif two_back == 1
+     sum -= 200
+   end
+  end
+  sum
+end
+
+def multi_roll_score_needed?(one_back, two_back, current)
+  two_back == one_back && one_back == current
+end
+
 def score(dice)
-  # You need to write this method
+  one_back = two_back = 0
+  dice.sort.inject(0) do |sum, roll|
+    if multi_roll_score_needed?(one_back, two_back, roll)
+      sum += score_multi_roll(one_back, two_back, roll)
+      one_back = two_back = 0
+    else
+      sum += score_single_roll(roll)
+	end
+
+    # advance mnemonic values
+	two_back = one_back
+	one_back = roll
+
+    sum
+  end
 end
 
 class AboutScoringProject < EdgeCase::Koan
